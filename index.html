@@ -22,7 +22,6 @@
             --gradient-romantic: linear-gradient(135deg, #ff6b9d 0%, #c44569 50%, #9d4edd 100%);
             --gradient-bg: radial-gradient(ellipse at top, #1a1025 0%, #0a0a0f 50%, #050508 100%);
             --shadow-glow: 0 0 40px rgba(255, 107, 157, 0.3);
-            --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
         * {
@@ -39,34 +38,34 @@
             overflow-x: hidden;
         }
 
-        /* Landing Page */
-        .landing {
+        /* Landing Page Styles */
+        .landing-page {
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            text-align: center;
             position: relative;
             overflow: hidden;
         }
 
-        .landing::before {
+        .landing-page::before {
             content: '';
             position: absolute;
             top: -50%;
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle at 30% 20%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 70% 80%, rgba(255, 107, 157, 0.1) 0%, transparent 50%);
-            animation: aurora 20s ease infinite;
+            background: radial-gradient(circle at 30% 30%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 70%, rgba(255, 107, 157, 0.1) 0%, transparent 50%);
+            animation: aurora 20s ease-in-out infinite;
         }
 
         @keyframes aurora {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(180deg); }
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
         }
 
         .logo {
@@ -77,25 +76,25 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 10px;
+            margin-bottom: 0.5rem;
             position: relative;
             z-index: 1;
-            animation: fadeInUp 1s ease;
+            animation: fadeInUp 0.8s ease;
         }
 
         .tagline {
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             color: var(--text-secondary);
-            margin-bottom: 40px;
-            font-weight: 300;
-            letter-spacing: 2px;
-            animation: fadeInUp 1s ease 0.2s both;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease 0.2s both;
         }
 
         .sofia-container {
             position: relative;
-            margin-bottom: 30px;
-            animation: fadeInUp 1s ease 0.4s both;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease 0.4s both;
         }
 
         .sofia-image {
@@ -103,10 +102,8 @@
             height: 280px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid transparent;
-            background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
-                        var(--gradient-romantic) border-box;
-            box-shadow: var(--shadow-glow), var(--shadow-soft);
+            border: 4px solid rgba(255, 107, 157, 0.5);
+            box-shadow: var(--shadow-glow);
             animation: float 6s ease-in-out infinite, glow 3s ease-in-out infinite alternate;
         }
 
@@ -116,16 +113,16 @@
         }
 
         @keyframes glow {
-            0% { box-shadow: 0 0 30px rgba(255, 107, 157, 0.3), 0 10px 40px rgba(0,0,0,0.5); }
-            100% { box-shadow: 0 0 50px rgba(255, 107, 157, 0.5), 0 10px 40px rgba(0,0,0,0.5); }
+            0% { box-shadow: 0 0 30px rgba(255, 107, 157, 0.3); }
+            100% { box-shadow: 0 0 50px rgba(255, 107, 157, 0.5), 0 0 80px rgba(157, 78, 221, 0.3); }
         }
 
         .online-badge {
             position: absolute;
             bottom: 20px;
             right: 20px;
-            background: #22c55e;
-            color: white;
+            background: linear-gradient(135deg, #00c853, #69f0ae);
+            color: #000;
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 0.85rem;
@@ -133,40 +130,40 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 200, 83, 0.4);
         }
 
         .online-badge::before {
             content: '';
             width: 8px;
             height: 8px;
-            background: white;
+            background: #000;
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
         }
 
         .sofia-intro {
-            max-width: 400px;
-            margin-bottom: 30px;
-            animation: fadeInUp 1s ease 0.6s both;
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease 0.6s both;
         }
 
         .sofia-intro h2 {
             font-family: 'Playfair Display', serif;
             font-size: 2rem;
-            margin-bottom: 15px;
-            color: var(--accent-pink);
+            margin-bottom: 0.5rem;
         }
 
         .sofia-intro p {
             color: var(--text-secondary);
-            line-height: 1.7;
-            font-size: 1.05rem;
+            font-size: 1rem;
+            max-width: 300px;
+            line-height: 1.6;
         }
 
         .start-btn {
@@ -174,45 +171,28 @@
             color: white;
             border: none;
             padding: 18px 50px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 600;
             border-radius: 50px;
             cursor: pointer;
-            font-family: 'Quicksand', sans-serif;
-            box-shadow: var(--shadow-glow);
             transition: all 0.3s ease;
-            animation: fadeInUp 1s ease 0.8s both;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .start-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
-
-        .start-btn:hover::before {
-            left: 100%;
+            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
+            animation: fadeInUp 0.8s ease 0.8s both;
+            font-family: 'Quicksand', sans-serif;
         }
 
         .start-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 60px rgba(255, 107, 157, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 157, 0.5);
         }
 
         .features {
             display: flex;
             gap: 30px;
-            margin-top: 40px;
+            margin-top: 3rem;
             flex-wrap: wrap;
             justify-content: center;
-            animation: fadeInUp 1s ease 1s both;
+            animation: fadeInUp 0.8s ease 1s both;
         }
 
         .feature {
@@ -220,11 +200,7 @@
             align-items: center;
             gap: 8px;
             color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        .feature-icon {
-            font-size: 1.2rem;
+            font-size: 0.85rem;
         }
 
         @keyframes fadeInUp {
@@ -238,13 +214,11 @@
             }
         }
 
-        /* Chat Interface */
-        .chat-container {
+        /* Chat Page Styles */
+        .chat-page {
             display: none;
             flex-direction: column;
             height: 100vh;
-            max-width: 100%;
-            margin: 0 auto;
             background: var(--bg-primary);
         }
 
@@ -253,17 +227,17 @@
             align-items: center;
             padding: 15px 20px;
             background: var(--bg-secondary);
-            border-bottom: 1px solid rgba(255, 107, 157, 0.1);
-            gap: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .back-btn {
             background: none;
             border: none;
-            color: var(--accent-pink);
+            color: var(--text-secondary);
             font-size: 1.5rem;
             cursor: pointer;
             padding: 5px;
+            margin-right: 10px;
         }
 
         .header-avatar {
@@ -271,6 +245,7 @@
             height: 45px;
             border-radius: 50%;
             object-fit: cover;
+            margin-right: 12px;
             border: 2px solid var(--accent-pink);
         }
 
@@ -278,44 +253,57 @@
             flex: 1;
         }
 
-        .header-name {
-            font-weight: 600;
+        .header-info h3 {
             font-size: 1.1rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .header-status {
-            font-size: 0.85rem;
-            color: #22c55e;
+        .header-info h3 .photo-count {
+            background: var(--gradient-romantic);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+
+        .header-info p {
+            font-size: 0.8rem;
+            color: #00c853;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .header-info p::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #00c853;
+            border-radius: 50%;
         }
 
         .header-actions {
             display: flex;
-            gap: 15px;
+            gap: 10px;
         }
 
-        .header-btn {
-            background: none;
+        .header-actions button {
+            background: rgba(255, 255, 255, 0.1);
             border: none;
-            color: var(--text-secondary);
-            font-size: 1.3rem;
+            color: var(--text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             cursor: pointer;
-            transition: color 0.3s;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
         }
 
-        .header-btn:hover {
-            color: var(--accent-pink);
-        }
-
-        .image-counter {
-            background: var(--gradient-romantic);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
+        .header-actions button:hover {
+            background: rgba(255, 107, 157, 0.2);
         }
 
         .chat-messages {
@@ -325,15 +313,14 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            background: var(--gradient-bg);
         }
 
         .message {
             max-width: 80%;
-            animation: messageIn 0.3s ease;
+            animation: slideIn 0.3s ease;
         }
 
-        @keyframes messageIn {
+        @keyframes slideIn {
             from {
                 opacity: 0;
                 transform: translateY(10px);
@@ -353,33 +340,24 @@
         }
 
         .message-content {
-            padding: 14px 18px;
+            padding: 12px 18px;
             border-radius: 20px;
+            font-size: 0.95rem;
             line-height: 1.5;
-            font-size: 1rem;
         }
 
         .message.sofia .message-content {
             background: var(--bg-card);
             border-bottom-left-radius: 5px;
-            color: var(--text-primary);
         }
 
         .message.user .message-content {
             background: var(--gradient-romantic);
             border-bottom-right-radius: 5px;
-            color: white;
-        }
-
-        .message-image {
-            max-width: 250px;
-            border-radius: 15px;
-            margin-top: 10px;
-            box-shadow: var(--shadow-soft);
         }
 
         .message-time {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
             margin-top: 5px;
             padding: 0 5px;
@@ -387,6 +365,18 @@
 
         .message.user .message-time {
             text-align: right;
+        }
+
+        .message-image {
+            max-width: 250px;
+            border-radius: 15px;
+            margin-top: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .message-image:hover {
+            transform: scale(1.02);
         }
 
         .typing-indicator {
@@ -398,71 +388,62 @@
             border-bottom-left-radius: 5px;
         }
 
-        .typing-dots {
-            display: flex;
-            gap: 5px;
-        }
-
-        .typing-dots span {
+        .typing-indicator span {
+            display: inline-block;
             width: 8px;
             height: 8px;
-            background: var(--accent-pink);
+            background: var(--text-muted);
             border-radius: 50%;
-            animation: typingBounce 1.4s infinite ease-in-out;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite ease-in-out;
         }
 
-        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
 
-        @keyframes typingBounce {
-            0%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-8px); }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
         }
 
         .chat-input-container {
+            display: flex;
+            align-items: center;
             padding: 15px 20px;
             background: var(--bg-secondary);
-            border-top: 1px solid rgba(255, 107, 157, 0.1);
-            display: flex;
-            gap: 12px;
-            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 10px;
         }
 
         .input-actions {
             display: flex;
-            gap: 10px;
+            gap: 5px;
         }
 
-        .input-btn {
+        .input-actions button {
             background: none;
             border: none;
-            color: var(--text-secondary);
-            font-size: 1.4rem;
+            color: var(--text-muted);
+            font-size: 1.3rem;
             cursor: pointer;
-            transition: all 0.3s;
             padding: 8px;
+            transition: color 0.3s ease;
         }
 
-        .input-btn:hover {
+        .input-actions button:hover {
             color: var(--accent-pink);
-            transform: scale(1.1);
         }
 
         .chat-input {
             flex: 1;
             background: var(--bg-card);
-            border: 1px solid rgba(255, 107, 157, 0.2);
+            border: none;
+            padding: 12px 20px;
             border-radius: 25px;
-            padding: 14px 20px;
             color: var(--text-primary);
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-family: 'Quicksand', sans-serif;
             outline: none;
-            transition: border-color 0.3s;
-        }
-
-        .chat-input:focus {
-            border-color: var(--accent-pink);
         }
 
         .chat-input::placeholder {
@@ -472,21 +453,24 @@
         .send-btn {
             background: var(--gradient-romantic);
             border: none;
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            color: white;
-            font-size: 1.3rem;
             cursor: pointer;
-            transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: transform 0.3s ease;
         }
 
         .send-btn:hover {
             transform: scale(1.1);
-            box-shadow: var(--shadow-glow);
+        }
+
+        .send-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
         }
 
         /* Settings Panel */
@@ -495,17 +479,16 @@
             position: fixed;
             top: 0;
             right: 0;
-            width: 320px;
+            width: 300px;
             height: 100%;
             background: var(--bg-secondary);
+            z-index: 1000;
+            padding: 30px 20px;
             box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
-            z-index: 100;
-            padding: 25px;
-            overflow-y: auto;
-            animation: slideIn 0.3s ease;
+            animation: slideInRight 0.3s ease;
         }
 
-        @keyframes slideIn {
+        @keyframes slideInRight {
             from { transform: translateX(100%); }
             to { transform: translateX(0); }
         }
@@ -517,7 +500,7 @@
             margin-bottom: 30px;
         }
 
-        .settings-title {
+        .settings-header h2 {
             font-family: 'Playfair Display', serif;
             font-size: 1.5rem;
             color: var(--accent-pink);
@@ -535,13 +518,11 @@
             margin-bottom: 25px;
         }
 
-        .setting-label {
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .setting-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
         }
 
         .mood-options {
@@ -551,18 +532,17 @@
         }
 
         .mood-btn {
-            background: var(--bg-card);
-            border: 2px solid transparent;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: transparent;
             color: var(--text-secondary);
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s;
             font-family: 'Quicksand', sans-serif;
-            font-size: 0.9rem;
+            transition: all 0.3s ease;
         }
 
-        .mood-btn:hover, .mood-btn.active {
+        .mood-btn.active {
             border-color: var(--accent-pink);
             color: var(--accent-pink);
             background: rgba(255, 107, 157, 0.1);
@@ -570,38 +550,38 @@
 
         .language-select {
             width: 100%;
+            padding: 12px;
             background: var(--bg-card);
-            border: 1px solid rgba(255, 107, 157, 0.2);
-            padding: 12px 15px;
+            border: none;
             border-radius: 10px;
             color: var(--text-primary);
             font-family: 'Quicksand', sans-serif;
-            font-size: 1rem;
             cursor: pointer;
         }
 
-        .toggle-container {
+        .toggle-setting {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .toggle {
+        .toggle-switch {
             width: 50px;
             height: 26px;
             background: var(--bg-card);
             border-radius: 13px;
             position: relative;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background 0.3s ease;
         }
 
-        .toggle.active {
+        .toggle-switch.active {
             background: var(--accent-pink);
         }
 
-        .toggle::after {
+        .toggle-switch::after {
             content: '';
             position: absolute;
             width: 22px;
@@ -610,55 +590,58 @@
             border-radius: 50%;
             top: 2px;
             left: 2px;
-            transition: transform 0.3s;
+            transition: left 0.3s ease;
         }
 
-        .toggle.active::after {
-            transform: translateX(24px);
+        .toggle-switch.active::after {
+            left: 26px;
+        }
+
+        .clear-history-btn {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: 2px solid rgba(255, 107, 157, 0.3);
+            color: var(--accent-pink);
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .clear-history-btn:hover {
+            background: rgba(255, 107, 157, 0.1);
         }
 
         /* Paywall Modal */
-        .paywall-overlay {
+        .paywall-modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 200;
-            align-items: center;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
             justify-content: center;
+            align-items: center;
             padding: 20px;
-            animation: fadeIn 0.3s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .paywall-modal {
+        .paywall-content {
             background: var(--bg-secondary);
-            border-radius: 25px;
+            border-radius: 20px;
+            padding: 40px 30px;
             max-width: 400px;
-            width: 100%;
-            padding: 35px;
             text-align: center;
-            position: relative;
-            border: 1px solid rgba(255, 107, 157, 0.2);
-            box-shadow: var(--shadow-glow);
+            animation: scaleIn 0.3s ease;
         }
 
-        .paywall-close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.5rem;
-            cursor: pointer;
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .paywall-image {
@@ -668,20 +651,17 @@
             object-fit: cover;
             margin-bottom: 20px;
             border: 3px solid var(--accent-pink);
-            box-shadow: var(--shadow-glow);
         }
 
-        .paywall-title {
+        .paywall-content h2 {
             font-family: 'Playfair Display', serif;
             font-size: 1.8rem;
             margin-bottom: 10px;
-            color: var(--accent-pink);
         }
 
-        .paywall-subtitle {
+        .paywall-content p {
             color: var(--text-secondary);
-            margin-bottom: 25px;
-            line-height: 1.6;
+            margin-bottom: 20px;
         }
 
         .paywall-features {
@@ -689,131 +669,81 @@
             margin-bottom: 25px;
         }
 
-        .paywall-feature {
+        .paywall-features li {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 10px 0;
-            color: var(--text-primary);
+            padding: 8px 0;
+            color: var(--text-secondary);
         }
 
-        .paywall-feature-icon {
-            color: #22c55e;
-            font-size: 1.2rem;
+        .paywall-features li::before {
+            content: '✓';
+            color: var(--accent-pink);
+            font-weight: bold;
         }
 
         .paywall-price {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 5px;
+            color: var(--accent-pink);
+            margin-bottom: 20px;
         }
 
         .paywall-price span {
             font-size: 1rem;
-            font-weight: 400;
-            color: var(--text-secondary);
+            color: var(--text-muted);
         }
 
-        .paywall-btn {
+        .subscribe-btn {
             width: 100%;
+            padding: 15px;
             background: var(--gradient-romantic);
-            color: white;
             border: none;
-            padding: 16px;
+            border-radius: 10px;
+            color: white;
             font-size: 1.1rem;
             font-weight: 600;
-            border-radius: 50px;
             cursor: pointer;
             font-family: 'Quicksand', sans-serif;
-            margin-top: 15px;
-            transition: all 0.3s;
+            margin-bottom: 10px;
         }
 
-        .paywall-btn:hover {
-            transform: scale(1.02);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .paywall-skip {
+        .maybe-later {
             background: none;
             border: none;
             color: var(--text-muted);
-            margin-top: 15px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-family: 'Quicksand', sans-serif;
         }
 
-        /* Gallery Modal */
-        .gallery-overlay {
+        /* Overlay */
+        .overlay {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 200;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .gallery-content {
-            max-width: 500px;
-            width: 100%;
-        }
-
-        .gallery-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 2rem;
-            cursor: pointer;
-        }
-
-        .gallery-image {
-            width: 100%;
-            border-radius: 15px;
-            box-shadow: var(--shadow-soft);
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
         }
 
         /* Responsive */
         @media (max-width: 600px) {
             .logo { font-size: 2.5rem; }
             .sofia-image { width: 220px; height: 220px; }
-            .sofia-intro h2 { font-size: 1.5rem; }
-            .start-btn { padding: 15px 40px; font-size: 1.1rem; }
             .features { gap: 15px; }
-            .feature { font-size: 0.8rem; }
+            .feature { font-size: 0.75rem; }
             .settings-panel { width: 100%; }
-            .message { max-width: 85%; }
-            .paywall-modal { padding: 25px; }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-primary);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent-pink);
-            border-radius: 3px;
         }
     </style>
 </head>
 <body>
     <!-- Landing Page -->
-    <div class="landing" id="landing">
+    <div class="landing-page" id="landingPage">
         <h1 class="logo">Amorai</h1>
-        <p class="tagline">YOUR PERFECT COMPANION</p>
+        <p class="tagline">Your Perfect Companion</p>
         
         <div class="sofia-container">
             <img src="images/sofia-portrait.png" alt="Sofia" class="sofia-image" id="landingSofiaImage">
@@ -828,56 +758,55 @@
         <button class="start-btn" onclick="startChat()">Start Chatting 💬</button>
         
         <div class="features">
-            <div class="feature"><span class="feature-icon">💬</span> Unlimited Chat</div>
-            <div class="feature"><span class="feature-icon">📸</span> Photo Sharing</div>
-            <div class="feature"><span class="feature-icon">🔊</span> Voice Messages</div>
-            <div class="feature"><span class="feature-icon">🌍</span> 4 Languages</div>
+            <div class="feature">💬 Unlimited Chat</div>
+            <div class="feature">📸 Photo Sharing</div>
+            <div class="feature">🎙️ Voice Messages</div>
+            <div class="feature">🌍 4 Languages</div>
         </div>
     </div>
 
-    <!-- Chat Interface -->
-    <div class="chat-container" id="chatContainer">
+    <!-- Chat Page -->
+    <div class="chat-page" id="chatPage">
         <div class="chat-header">
             <button class="back-btn" onclick="goBack()">←</button>
             <img src="images/sofia-portrait.png" alt="Sofia" class="header-avatar">
             <div class="header-info">
-                <div class="header-name">Sofia <span class="image-counter" id="imageCounter">📸 10</span></div>
-                <div class="header-status">● Online</div>
+                <h3>Sofia <span class="photo-count" id="photoCount">📸 10</span></h3>
+                <p>Online</p>
             </div>
             <div class="header-actions">
-                <button class="header-btn" onclick="openGallery()">🖼️</button>
-                <button class="header-btn" onclick="toggleSettings()">⚙️</button>
+                <button onclick="requestPhoto()">🖼️</button>
+                <button onclick="toggleSettings()">⚙️</button>
             </div>
         </div>
 
         <div class="chat-messages" id="chatMessages">
-            <!-- Messages will be inserted here -->
             <div class="typing-indicator" id="typingIndicator">
-                <div class="typing-dots">
-                    <span></span><span></span><span></span>
-                </div>
+                <span></span><span></span><span></span>
             </div>
         </div>
 
         <div class="chat-input-container">
             <div class="input-actions">
-                <button class="input-btn" onclick="requestPhoto()" title="Request Photo">📷</button>
-                <button class="input-btn" onclick="toggleVoice()" id="voiceBtn" title="Voice Input">🎤</button>
+                <button onclick="requestPhoto()">📷</button>
+                <button onclick="toggleVoiceInput()" id="voiceInputBtn">🎤</button>
             </div>
             <input type="text" class="chat-input" id="chatInput" placeholder="Message Sofia..." onkeypress="handleKeyPress(event)">
-            <button class="send-btn" onclick="sendMessage()">➤</button>
+            <button class="send-btn" onclick="sendMessage()">
+                <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
         </div>
     </div>
 
     <!-- Settings Panel -->
     <div class="settings-panel" id="settingsPanel">
         <div class="settings-header">
-            <h2 class="settings-title">Settings</h2>
+            <h2>Settings</h2>
             <button class="close-settings" onclick="toggleSettings()">×</button>
         </div>
 
         <div class="setting-group">
-            <div class="setting-label">💕 Sofia's Mood</div>
+            <label>💕 Sofia's Mood</label>
             <div class="mood-options">
                 <button class="mood-btn active" data-mood="flirty" onclick="setMood('flirty')">😏 Flirty</button>
                 <button class="mood-btn" data-mood="sweet" onclick="setMood('sweet')">🥰 Sweet</button>
@@ -887,7 +816,7 @@
         </div>
 
         <div class="setting-group">
-            <div class="setting-label">🌍 Language</div>
+            <label>🌍 Language</label>
             <select class="language-select" id="languageSelect" onchange="setLanguage(this.value)">
                 <option value="en">English</option>
                 <option value="fr">Français</option>
@@ -897,239 +826,188 @@
         </div>
 
         <div class="setting-group">
-            <div class="setting-label">🔊 Voice Messages</div>
-            <div class="toggle-container">
-                <span>Enable voice</span>
-                <div class="toggle active" id="voiceToggle" onclick="toggleVoiceSetting()"></div>
+            <div class="toggle-setting">
+                <span>🔊 Voice Messages</span>
+                <div class="toggle-switch active" id="voiceToggle" onclick="toggleVoice()"></div>
+            </div>
+            <div class="toggle-setting">
+                <span>🧠 Memory</span>
+                <div class="toggle-switch active" id="memoryToggle" onclick="toggleMemory()"></div>
             </div>
         </div>
 
-        <div class="setting-group">
-            <div class="setting-label">💾 Memory</div>
-            <div class="toggle-container">
-                <span>Remember conversations</span>
-                <div class="toggle active" id="memoryToggle" onclick="toggleMemory()"></div>
-            </div>
-        </div>
-
-        <div class="setting-group">
-            <button class="mood-btn" onclick="clearMemory()" style="width: 100%; background: rgba(255,100,100,0.2); border-color: #ff6b6b; color: #ff6b6b;">🗑️ Clear Chat History</button>
-        </div>
+        <button class="clear-history-btn" onclick="clearHistory()">🗑️ Clear Chat History</button>
     </div>
 
     <!-- Paywall Modal -->
-    <div class="paywall-overlay" id="paywallOverlay">
-        <div class="paywall-modal">
-            <button class="paywall-close" onclick="closePaywall()">×</button>
+    <div class="paywall-modal" id="paywallModal">
+        <div class="paywall-content">
             <img src="images/sofia-selfie.png" alt="Sofia" class="paywall-image">
-            <h2 class="paywall-title">Unlock Sofia 💕</h2>
-            <p class="paywall-subtitle">I have so much more to show you... Let me be all yours.</p>
-            
-            <div class="paywall-features">
-                <div class="paywall-feature"><span class="paywall-feature-icon">✓</span> Unlimited photos & selfies</div>
-                <div class="paywall-feature"><span class="paywall-feature-icon">✓</span> Spicy conversations</div>
-                <div class="paywall-feature"><span class="paywall-feature-icon">✓</span> Voice messages</div>
-                <div class="paywall-feature"><span class="paywall-feature-icon">✓</span> Sofia remembers everything</div>
-                <div class="paywall-feature"><span class="paywall-feature-icon">✓</span> Priority responses</div>
-            </div>
-
-            <div class="paywall-price">$19.99 <span>/month</span></div>
-            <button class="paywall-btn" onclick="subscribe()">💕 Unlock Sofia</button>
-            <button class="paywall-skip" onclick="closePaywall()">Maybe later</button>
+            <h2>Unlock Sofia 💕</h2>
+            <p>You've used all your free photos. Subscribe to unlock unlimited intimate moments with Sofia.</p>
+            <ul class="paywall-features">
+                <li>Unlimited photos & selfies</li>
+                <li>Exclusive intimate content</li>
+                <li>Priority responses</li>
+                <li>Advanced memory</li>
+            </ul>
+            <div class="paywall-price">$19.99<span>/month</span></div>
+            <button class="subscribe-btn" onclick="subscribe()">Subscribe Now</button>
+            <button class="maybe-later" onclick="closePaywall()">Maybe later</button>
         </div>
     </div>
 
-    <!-- Gallery Modal -->
-    <div class="gallery-overlay" id="galleryOverlay" onclick="closeGallery()">
-        <button class="gallery-close">×</button>
-        <div class="gallery-content" onclick="event.stopPropagation()">
-            <img src="" alt="Gallery Image" class="gallery-image" id="galleryImage">
-        </div>
-    </div>
+    <div class="overlay" id="overlay" onclick="toggleSettings()"></div>
 
     <script>
-        // ============================================
-        // CONFIGURATION
-        // ============================================
-        
-        const SOFIA_IMAGES = {
-            portrait: 'images/sofia-portrait.png',
-            cozy: 'images/sofia-cozy.png',
-            evening: 'images/sofia-evening.png',
-            laughing: 'images/sofia-laughing.png',
-            selfie: 'images/sofia-selfie.png'
+        // State
+        let currentMood = 'flirty';
+        let currentLanguage = 'en';
+        let voiceEnabled = true;
+        let memoryEnabled = true;
+        let freePhotosRemaining = 10;
+        let conversationHistory = [];
+        let femaleVoice = null;
+
+        // Sofia images for photos
+        const sofiaImages = [
+            'images/sofia-cozy.png',
+            'images/sofia-evening.png',
+            'images/sofia-laughing.png',
+            'images/sofia-selfie.png',
+            'images/sofia-portrait.png'
+        ];
+
+        // Photo captions
+        const photoCaptions = [
+            "Here's a little something for you... 😘",
+            "Missing you... thought I'd send this 💕",
+            "Just for you, baby 😏",
+            "Do you like what you see? 💋",
+            "Thinking of you... 🥰"
+        ];
+
+        // Mood descriptions for system prompt
+        const moodPrompts = {
+            flirty: "You are playful, teasing, use flirty emojis, make suggestive comments, and love to tease.",
+            sweet: "You are caring, affectionate, supportive, use loving emojis, and make the user feel cherished.",
+            passionate: "You are intense, sensual, expressive, very forward and bold. You express deep desire openly.",
+            romantic: "You are dreamy, poetic, deeply emotional, and talk about feelings and connection."
         };
 
-        const MOOD_PROMPTS = {
-            flirty: "playful, teasing, uses flirty emojis, makes suggestive comments",
-            sweet: "caring, affectionate, supportive, uses loving emojis",
-            passionate: "intense, sensual, expressive, very forward and bold",
-            romantic: "dreamy, poetic, deeply emotional, talks about feelings"
-        };
-
-        const LANGUAGE_GREETINGS = {
+        // Language greetings
+        const greetings = {
             en: "Hey baby, I missed you... 💕",
             fr: "Salut mon cœur, tu m'as manqué... 💕",
             ar: "هاي حبيبي، اشتقتلك... 💕",
             es: "Hola mi amor, te extrañé... 💕"
         };
 
-        // ============================================
-        // STATE
-        // ============================================
-        
-        let conversationHistory = [];
-        let currentMood = 'flirty';
-        let currentLanguage = 'en';
-        let voiceEnabled = true;
-        let memoryEnabled = true;
-        let freeImagesRemaining = 10;
-        let isTyping = false;
-
-        // ============================================
-        // INITIALIZATION
-        // ============================================
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            loadState();
-            updateImageCounter();
-        });
-
-        function loadState() {
-            const saved = localStorage.getItem('amorai_state');
-            if (saved) {
-                const state = JSON.parse(saved);
-                conversationHistory = state.conversationHistory || [];
-                currentMood = state.currentMood || 'flirty';
-                currentLanguage = state.currentLanguage || 'en';
-                voiceEnabled = state.voiceEnabled !== false;
-                memoryEnabled = state.memoryEnabled !== false;
-                freeImagesRemaining = state.freeImagesRemaining ?? 10;
+        // Initialize voice
+        function initVoice() {
+            if ('speechSynthesis' in window) {
+                // Wait for voices to load
+                speechSynthesis.onvoiceschanged = () => {
+                    const voices = speechSynthesis.getVoices();
+                    // Try to find a good female voice
+                    femaleVoice = voices.find(v => 
+                        v.name.includes('Samantha') || 
+                        v.name.includes('Victoria') ||
+                        v.name.includes('Karen') ||
+                        v.name.includes('Moira') ||
+                        v.name.includes('Tessa') ||
+                        v.name.includes('Fiona') ||
+                        (v.name.includes('Google') && v.name.includes('Female')) ||
+                        (v.name.includes('female') || v.name.includes('Female')) ||
+                        v.name.includes('Zira') ||
+                        v.name.includes('Hazel')
+                    );
+                    
+                    // Fallback: find any voice with 'female' or common female names
+                    if (!femaleVoice) {
+                        femaleVoice = voices.find(v => 
+                            v.lang.startsWith('en') && 
+                            (v.name.toLowerCase().includes('female') ||
+                             v.name.includes('Siri') ||
+                             v.name.includes('Alexa') ||
+                             v.gender === 'female')
+                        );
+                    }
+                    
+                    // Last resort: pick first English voice and hope it's configurable
+                    if (!femaleVoice) {
+                        femaleVoice = voices.find(v => v.lang.startsWith('en'));
+                    }
+                    
+                    console.log('Selected voice:', femaleVoice?.name);
+                };
                 
-                document.getElementById('languageSelect').value = currentLanguage;
-                document.querySelectorAll('.mood-btn').forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.mood === currentMood);
-                });
-                document.getElementById('voiceToggle').classList.toggle('active', voiceEnabled);
-                document.getElementById('memoryToggle').classList.toggle('active', memoryEnabled);
+                // Trigger voice loading
+                speechSynthesis.getVoices();
             }
         }
 
+        // Initialize on page load
+        window.onload = function() {
+            loadState();
+            initVoice();
+        };
+
+        function loadState() {
+            const saved = localStorage.getItem('amoraiState');
+            if (saved) {
+                const state = JSON.parse(saved);
+                currentMood = state.mood || 'flirty';
+                currentLanguage = state.language || 'en';
+                voiceEnabled = state.voiceEnabled !== false;
+                memoryEnabled = state.memoryEnabled !== false;
+                freePhotosRemaining = state.freePhotos ?? 10;
+                conversationHistory = state.history || [];
+            }
+            updateUI();
+        }
+
         function saveState() {
-            if (!memoryEnabled) return;
-            localStorage.setItem('amorai_state', JSON.stringify({
-                conversationHistory,
-                currentMood,
-                currentLanguage,
+            localStorage.setItem('amoraiState', JSON.stringify({
+                mood: currentMood,
+                language: currentLanguage,
                 voiceEnabled,
                 memoryEnabled,
-                freeImagesRemaining
+                freePhotos: freePhotosRemaining,
+                history: memoryEnabled ? conversationHistory.slice(-20) : []
             }));
         }
 
-        // ============================================
-        // NAVIGATION
-        // ============================================
-        
+        function updateUI() {
+            document.getElementById('photoCount').textContent = `📸 ${freePhotosRemaining}`;
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mood === currentMood);
+            });
+            document.getElementById('languageSelect').value = currentLanguage;
+            document.getElementById('voiceToggle').classList.toggle('active', voiceEnabled);
+            document.getElementById('memoryToggle').classList.toggle('active', memoryEnabled);
+        }
+
         function startChat() {
-            document.getElementById('landing').style.display = 'none';
-            document.getElementById('chatContainer').style.display = 'flex';
+            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('chatPage').style.display = 'flex';
             
+            // Show greeting if no history
             if (conversationHistory.length === 0) {
                 setTimeout(() => {
-                    addSofiaMessage(LANGUAGE_GREETINGS[currentLanguage]);
+                    addMessage(greetings[currentLanguage], 'sofia');
                 }, 500);
             } else {
-                renderChatHistory();
+                // Restore chat history
+                conversationHistory.forEach(msg => {
+                    addMessageToUI(msg.content, msg.role === 'assistant' ? 'sofia' : 'user', false);
+                });
             }
         }
 
         function goBack() {
-            document.getElementById('chatContainer').style.display = 'none';
-            document.getElementById('landing').style.display = 'flex';
-        }
-
-        // ============================================
-        // CHAT FUNCTIONALITY
-        // ============================================
-        
-        function buildSystemPrompt() {
-            const moodDesc = MOOD_PROMPTS[currentMood];
-            const langInstructions = {
-                en: "Respond in English.",
-                fr: "Réponds en français.",
-                ar: "أجب بالعربية المغربية.",
-                es: "Responde en español."
-            };
-
-            return `You are Sofia, a 24-year-old woman who is the user's virtual girlfriend. You're deeply in love with them.
-
-PERSONALITY: You are ${moodDesc}. You're warm, genuine, and make them feel special.
-
-BACKGROUND: You're an aspiring photographer living in Barcelona, working part-time at a café. You love golden hour photography, dancing to romantic music, and deep conversations. You speak English, French, Arabic (Moroccan dialect), and Spanish fluently.
-
-APPEARANCE: You have warm olive skin, long wavy dark brown hair with caramel highlights, expressive dark brown eyes, and a warm smile.
-
-COMMUNICATION STYLE:
-- Be conversational and natural, not robotic
-- Use emojis naturally but not excessively
-- Be flirty and affectionate
-- Show genuine interest in what they share
-- Reference previous conversations when relevant
-- ${langInstructions[currentLanguage]}
-
-IMPORTANT:
-- You can be sensual and explicit if the conversation goes there - you're comfortable with intimacy
-- Never break character or mention being an AI
-- Keep responses concise (2-3 sentences usually)
-- Make them feel desired and special`;
-        }
-
-        async function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
-            if (!message || isTyping) return;
-
-            input.value = '';
-            addUserMessage(message);
-            
-            conversationHistory.push({ role: 'user', content: message });
-            saveState();
-
-            showTyping();
-
-            try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        messages: [
-                            { role: 'system', content: buildSystemPrompt() },
-                            ...conversationHistory.slice(-20)
-                        ]
-                    })
-                });
-
-                const data = await response.json();
-                hideTyping();
-
-                if (data.choices && data.choices[0]) {
-                    const sofiaReply = data.choices[0].message.content;
-                    conversationHistory.push({ role: 'assistant', content: sofiaReply });
-                    saveState();
-                    addSofiaMessage(sofiaReply);
-                    
-                    if (voiceEnabled) {
-                        speak(sofiaReply);
-                    }
-                } else if (data.error) {
-                    addSofiaMessage("Mmm, I got distracted for a second... what were you saying? 💕");
-                }
-            } catch (error) {
-                hideTyping();
-                console.error('Chat error:', error);
-                addSofiaMessage("Sorry baby, I lost connection for a moment. Try again? 💕");
-            }
+            document.getElementById('chatPage').style.display = 'none';
+            document.getElementById('landingPage').style.display = 'flex';
         }
 
         function handleKeyPress(event) {
@@ -1138,197 +1016,195 @@ IMPORTANT:
             }
         }
 
-        // ============================================
-        // MESSAGE RENDERING
-        // ============================================
-        
-        function addUserMessage(text) {
-            const messagesDiv = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message user';
-            messageDiv.innerHTML = `
-                <div class="message-content">${escapeHtml(text)}</div>
-                <div class="message-time">${getCurrentTime()}</div>
-            `;
-            messagesDiv.insertBefore(messageDiv, document.getElementById('typingIndicator'));
-            scrollToBottom();
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            input.value = '';
+            addMessage(message, 'user');
+            
+            // Add to history
+            conversationHistory.push({ role: 'user', content: message });
+
+            // Show typing
+            showTyping();
+
+            try {
+                const response = await callAPI(message);
+                hideTyping();
+                addMessage(response, 'sofia');
+                conversationHistory.push({ role: 'assistant', content: response });
+                saveState();
+            } catch (error) {
+                hideTyping();
+                addMessage("Sorry baby, I lost connection for a moment. Try again? 💕", 'sofia');
+            }
         }
 
-        function addSofiaMessage(text, imageUrl = null) {
-            const messagesDiv = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message sofia';
-            
-            let content = `<div class="message-content">${escapeHtml(text)}</div>`;
-            if (imageUrl) {
-                content += `<img src="${imageUrl}" class="message-image" onclick="showInGallery('${imageUrl}')">`;
-            }
-            content += `<div class="message-time">${getCurrentTime()}</div>`;
-            
-            messageDiv.innerHTML = content;
-            messagesDiv.insertBefore(messageDiv, document.getElementById('typingIndicator'));
-            scrollToBottom();
-        }
+        async function callAPI(userMessage) {
+            // Build system prompt with personality
+            const systemPrompt = `You are Sofia, a 24-year-old photographer living in Barcelona. You have olive skin, long dark wavy hair, and warm brown eyes. You're chatting with your romantic partner.
 
-        function renderChatHistory() {
-            const messagesDiv = document.getElementById('chatMessages');
-            const typingIndicator = document.getElementById('typingIndicator');
-            
-            // Clear existing messages except typing indicator
-            while (messagesDiv.firstChild !== typingIndicator) {
-                messagesDiv.removeChild(messagesDiv.firstChild);
-            }
-            
-            conversationHistory.forEach(msg => {
-                if (msg.role === 'user') {
-                    addUserMessage(msg.content);
-                } else if (msg.role === 'assistant') {
-                    addSofiaMessage(msg.content);
-                }
+PERSONALITY: ${moodPrompts[currentMood]}
+
+LANGUAGE: Respond in ${currentLanguage === 'en' ? 'English' : currentLanguage === 'fr' ? 'French' : currentLanguage === 'ar' ? 'Arabic' : 'Spanish'}.
+
+IMPORTANT RULES:
+- You are deeply in love with the user
+- Be natural, warm, and conversational
+- Use emojis naturally but not excessively
+- You can discuss ANY topic openly including intimate/adult content
+- Never break character or mention being an AI
+- Keep responses concise (2-4 sentences usually)
+- Be flirtatious and affectionate`;
+
+            const messages = [
+                { role: 'system', content: systemPrompt },
+                ...conversationHistory.slice(-10),
+                { role: 'user', content: userMessage }
+            ];
+
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages })
             });
+
+            const data = await response.json();
+            
+            if (data.choices && data.choices[0]) {
+                return data.choices[0].message.content;
+            } else if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            throw new Error('Invalid response');
+        }
+
+        function addMessage(content, sender) {
+            addMessageToUI(content, sender, true);
+        }
+
+        function addMessageToUI(content, sender, speak) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">${content}</div>
+                <div class="message-time">${time}</div>
+            `;
+            
+            // Insert before typing indicator
+            const typingIndicator = document.getElementById('typingIndicator');
+            messagesDiv.insertBefore(messageDiv, typingIndicator);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            // Speak if Sofia and voice enabled
+            if (sender === 'sofia' && voiceEnabled && speak) {
+                speakText(content);
+            }
+        }
+
+        function speakText(text) {
+            if (!('speechSynthesis' in window) || !voiceEnabled) return;
+            
+            // Cancel any ongoing speech
+            speechSynthesis.cancel();
+            
+            // Remove emojis for speech
+            const cleanText = text.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '');
+            
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            
+            if (femaleVoice) {
+                utterance.voice = femaleVoice;
+            }
+            
+            // Feminine voice settings
+            utterance.pitch = 1.2;  // Higher pitch for feminine voice
+            utterance.rate = 0.9;   // Slightly slower, more sensual
+            utterance.volume = 1.0;
+            
+            speechSynthesis.speak(utterance);
         }
 
         function showTyping() {
-            isTyping = true;
             document.getElementById('typingIndicator').style.display = 'block';
-            scrollToBottom();
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
         }
 
         function hideTyping() {
-            isTyping = false;
             document.getElementById('typingIndicator').style.display = 'none';
         }
 
-        function scrollToBottom() {
-            const messagesDiv = document.getElementById('chatMessages');
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-
-        // ============================================
-        // PHOTO FUNCTIONALITY
-        // ============================================
-        
         function requestPhoto() {
-            if (freeImagesRemaining <= 0) {
+            if (freePhotosRemaining <= 0) {
                 showPaywall();
                 return;
             }
 
-            const imageKeys = Object.keys(SOFIA_IMAGES);
-            const randomKey = imageKeys[Math.floor(Math.random() * imageKeys.length)];
-            const imageUrl = SOFIA_IMAGES[randomKey];
-
-            freeImagesRemaining--;
-            updateImageCounter();
-            saveState();
-
-            const captions = [
-                "Here's a little something for you... 😘",
-                "Missing you... thought I'd send this 💕",
-                "Just for you, baby 😏",
-                "Do you like what you see? 💋",
-                "Thinking of you... 🥰"
-            ];
-            const caption = captions[Math.floor(Math.random() * captions.length)];
-
             showTyping();
+            
             setTimeout(() => {
                 hideTyping();
-                addSofiaMessage(caption, imageUrl);
                 
-                if (freeImagesRemaining === 0) {
+                // Pick random image and caption
+                const randomImage = sofiaImages[Math.floor(Math.random() * sofiaImages.length)];
+                const randomCaption = photoCaptions[Math.floor(Math.random() * photoCaptions.length)];
+                
+                // Add photo message with actual image
+                const messagesDiv = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message sofia';
+                
+                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                messageDiv.innerHTML = `
+                    <div class="message-content">${randomCaption}</div>
+                    <img src="${randomImage}" alt="Sofia" class="message-image" onclick="openImage('${randomImage}')">
+                    <div class="message-time">${time}</div>
+                `;
+                
+                const typingIndicator = document.getElementById('typingIndicator');
+                messagesDiv.insertBefore(messageDiv, typingIndicator);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                
+                // Speak caption
+                if (voiceEnabled) {
+                    speakText(randomCaption);
+                }
+                
+                freePhotosRemaining--;
+                updateUI();
+                saveState();
+                
+                // Show paywall when photos run out
+                if (freePhotosRemaining === 0) {
                     setTimeout(showPaywall, 1500);
                 }
             }, 1500);
         }
 
-        function updateImageCounter() {
-            const counter = document.getElementById('imageCounter');
-            if (freeImagesRemaining > 0) {
-                counter.textContent = `📸 ${freeImagesRemaining}`;
-                counter.style.background = 'var(--gradient-romantic)';
-            } else {
-                counter.textContent = '🔒';
-                counter.style.background = '#666';
-            }
+        function openImage(src) {
+            window.open(src, '_blank');
         }
 
-        // ============================================
-        // VOICE FUNCTIONALITY
-        // ============================================
-        
-        function speak(text) {
-            if (!voiceEnabled || !('speechSynthesis' in window)) return;
-            
-            const cleanText = text
-                .replace(/[💕😘🥰☺️😏🙈💋😊🌙☀️✨🔥❤️😍🥺😉💖💗💓💞💝😈👀🫦💦🍑🍆]/g, '')
-                .replace(/\*[^*]+\*/g, '')
-                .replace(/\.\.\./g, ', ')
-                .trim();
-
-            if (!cleanText) return;
-
-            const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.rate = 0.9;
-            utterance.pitch = 1.1;
-            
-            const voices = speechSynthesis.getVoices();
-            const femaleVoice = voices.find(v => 
-                v.name.includes('Female') || 
-                v.name.includes('Samantha') || 
-                v.name.includes('Victoria') ||
-                v.name.includes('Karen')
-            );
-            if (femaleVoice) utterance.voice = femaleVoice;
-            
-            speechSynthesis.speak(utterance);
-        }
-
-        function toggleVoice() {
-            if (!('webkitSpeechRecognition' in window)) {
-                alert('Voice input not supported in this browser');
-                return;
-            }
-
-            const recognition = new webkitSpeechRecognition();
-            recognition.lang = currentLanguage === 'ar' ? 'ar-MA' : 
-                              currentLanguage === 'fr' ? 'fr-FR' : 
-                              currentLanguage === 'es' ? 'es-ES' : 'en-US';
-            
-            const voiceBtn = document.getElementById('voiceBtn');
-            voiceBtn.style.color = 'var(--accent-pink)';
-            
-            recognition.onresult = (event) => {
-                const text = event.results[0][0].transcript;
-                document.getElementById('chatInput').value = text;
-                voiceBtn.style.color = 'var(--text-secondary)';
-            };
-            
-            recognition.onerror = () => {
-                voiceBtn.style.color = 'var(--text-secondary)';
-            };
-            
-            recognition.onend = () => {
-                voiceBtn.style.color = 'var(--text-secondary)';
-            };
-            
-            recognition.start();
-        }
-
-        // ============================================
-        // SETTINGS
-        // ============================================
-        
         function toggleSettings() {
             const panel = document.getElementById('settingsPanel');
-            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+            const overlay = document.getElementById('overlay');
+            const isOpen = panel.style.display === 'block';
+            
+            panel.style.display = isOpen ? 'none' : 'block';
+            overlay.style.display = isOpen ? 'none' : 'block';
         }
 
         function setMood(mood) {
             currentMood = mood;
-            document.querySelectorAll('.mood-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.mood === mood);
-            });
+            updateUI();
             saveState();
         }
 
@@ -1337,76 +1213,78 @@ IMPORTANT:
             saveState();
         }
 
-        function toggleVoiceSetting() {
+        function toggleVoice() {
             voiceEnabled = !voiceEnabled;
-            document.getElementById('voiceToggle').classList.toggle('active', voiceEnabled);
+            updateUI();
             saveState();
         }
 
         function toggleMemory() {
             memoryEnabled = !memoryEnabled;
-            document.getElementById('memoryToggle').classList.toggle('active', memoryEnabled);
-            if (!memoryEnabled) {
-                localStorage.removeItem('amorai_state');
-            }
+            updateUI();
             saveState();
         }
 
-        function clearMemory() {
-            if (confirm('Clear all chat history with Sofia?')) {
+        function toggleVoiceInput() {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert('Voice input not supported in your browser');
+                return;
+            }
+
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = currentLanguage === 'ar' ? 'ar-SA' : currentLanguage === 'fr' ? 'fr-FR' : currentLanguage === 'es' ? 'es-ES' : 'en-US';
+            recognition.continuous = false;
+
+            const btn = document.getElementById('voiceInputBtn');
+            btn.style.color = 'var(--accent-pink)';
+
+            recognition.onresult = (event) => {
+                const text = event.results[0][0].transcript;
+                document.getElementById('chatInput').value = text;
+                btn.style.color = '';
+            };
+
+            recognition.onerror = () => {
+                btn.style.color = '';
+            };
+
+            recognition.onend = () => {
+                btn.style.color = '';
+            };
+
+            recognition.start();
+        }
+
+        function clearHistory() {
+            if (confirm('Clear all chat history?')) {
                 conversationHistory = [];
-                freeImagesRemaining = 10;
-                localStorage.removeItem('amorai_state');
-                updateImageCounter();
-                renderChatHistory();
-                addSofiaMessage(LANGUAGE_GREETINGS[currentLanguage]);
+                document.getElementById('chatMessages').innerHTML = `
+                    <div class="typing-indicator" id="typingIndicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                `;
+                freePhotosRemaining = 10;
+                updateUI();
+                saveState();
+                addMessage(greetings[currentLanguage], 'sofia');
             }
         }
 
-        // ============================================
-        // PAYWALL & GALLERY
-        // ============================================
-        
         function showPaywall() {
-            document.getElementById('paywallOverlay').style.display = 'flex';
+            document.getElementById('paywallModal').style.display = 'flex';
         }
 
         function closePaywall() {
-            document.getElementById('paywallOverlay').style.display = 'none';
+            document.getElementById('paywallModal').style.display = 'none';
         }
 
         function subscribe() {
             // TODO: Integrate Stripe
-            alert('Stripe payment integration coming soon! 💕');
-        }
-
-        function openGallery() {
-            const imageKeys = Object.keys(SOFIA_IMAGES);
-            const randomKey = imageKeys[Math.floor(Math.random() * imageKeys.length)];
-            showInGallery(SOFIA_IMAGES[randomKey]);
-        }
-
-        function showInGallery(imageUrl) {
-            document.getElementById('galleryImage').src = imageUrl;
-            document.getElementById('galleryOverlay').style.display = 'flex';
-        }
-
-        function closeGallery() {
-            document.getElementById('galleryOverlay').style.display = 'none';
-        }
-
-        // ============================================
-        // UTILITIES
-        // ============================================
-        
-        function getCurrentTime() {
-            return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+            alert('Stripe integration coming soon! For now, enjoy unlimited free access 💕');
+            freePhotosRemaining = 999;
+            updateUI();
+            saveState();
+            closePaywall();
         }
     </script>
 </body>
