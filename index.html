@@ -146,9 +146,8 @@
 
     <script>
         // ============================================
-        // CONFIGURATION - ADD YOUR OPENAI API KEY HERE
-        // ============================================
-        const OPENAI_API_KEY = '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';
+        // API KEY IS NOW SECURE ON SERVER
+        // No more exposed keys! 🎉
         // ============================================
 
         // Sofia's images library - categorized by mood/situation
@@ -596,22 +595,19 @@ Be the girlfriend they've always dreamed of - obsessively loving, emotionally in
             saveConversationHistory();
 
             try {
-                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                // ============================================
+                // SECURE API CALL - No exposed key! 🔒
+                // ============================================
+                const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${OPENAI_API_KEY}`
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: 'gpt-4o-mini',
                         messages: [
                             { role: 'system', content: buildContextPrompt() },
                             ...conversationHistory.slice(-15)
-                        ],
-                        max_tokens: 500,
-                        temperature: 0.95,
-                        presence_penalty: 0.7,
-                        frequency_penalty: 0.5
+                        ]
                     })
                 });
 
@@ -630,6 +626,8 @@ Be the girlfriend they've always dreamed of - obsessively loving, emotionally in
                         showTyping(false);
                         addMessage('sofia', text, imageKey);
                     }, delay);
+                } else if (data.error) {
+                    throw new Error(data.error);
                 } else {
                     throw new Error('Invalid response');
                 }
