@@ -717,6 +717,70 @@
             font-family: 'Quicksand', sans-serif;
         }
 
+        /* Age Verification Modal */
+        .age-modal {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .age-modal-content {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 40px 30px;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .age-modal-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--accent-pink);
+        }
+
+        .age-modal-content p {
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .age-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .age-btn {
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Quicksand', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .age-btn.yes {
+            background: var(--gradient-romantic);
+            border: none;
+            color: white;
+        }
+
+        .age-btn.no {
+            background: transparent;
+            border: 2px solid var(--text-muted);
+            color: var(--text-muted);
+        }
+
         /* Overlay */
         .overlay {
             display: none;
@@ -740,8 +804,20 @@
     </style>
 </head>
 <body>
+    <!-- Age Verification Modal -->
+    <div class="age-modal" id="ageModal">
+        <div class="age-modal-content">
+            <h2>🔞 Age Verification</h2>
+            <p>This app contains adult content intended for users 18 years or older. By entering, you confirm you are of legal age in your jurisdiction.</p>
+            <div class="age-buttons">
+                <button class="age-btn yes" onclick="verifyAge(true)">I'm 18+</button>
+                <button class="age-btn no" onclick="verifyAge(false)">Exit</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Landing Page -->
-    <div class="landing-page" id="landingPage">
+    <div class="landing-page" id="landingPage" style="display: none;">
         <h1 class="logo">Amorai</h1>
         <p class="tagline">Your Perfect Companion</p>
         
@@ -775,7 +851,8 @@
                 <p>Online</p>
             </div>
             <div class="header-actions">
-                <button onclick="requestPhoto()">🖼️</button>
+                <button onclick="requestPhoto('nsfw')" title="Request intimate photo">🔥</button>
+                <button onclick="requestPhoto('sfw')" title="Request cute photo">🖼️</button>
                 <button onclick="toggleSettings()">⚙️</button>
             </div>
         </div>
@@ -788,7 +865,7 @@
 
         <div class="chat-input-container">
             <div class="input-actions">
-                <button onclick="requestPhoto()">📷</button>
+                <button onclick="requestPhoto('nsfw')" title="Request intimate photo">🔥</button>
                 <button onclick="toggleVoiceInput()" id="voiceInputBtn">🎤</button>
             </div>
             <input type="text" class="chat-input" id="chatInput" placeholder="Message Sofia..." onkeypress="handleKeyPress(event)">
@@ -842,7 +919,7 @@
     <!-- Paywall Modal -->
     <div class="paywall-modal" id="paywallModal">
         <div class="paywall-content">
-            <img src="images/sofia-selfie.png" alt="Sofia" class="paywall-image">
+            <img src="images/sofia-teaser.png" alt="Sofia" class="paywall-image">
             <h2>Unlock Sofia 💕</h2>
             <p>You've used all your free photos. Subscribe to unlock unlimited intimate moments with Sofia.</p>
             <ul class="paywall-features">
@@ -868,23 +945,68 @@
         let freePhotosRemaining = 10;
         let conversationHistory = [];
         let femaleVoice = null;
+        let ageVerified = false;
 
-        // Sofia images for photos
-        const sofiaImages = [
+        // SFW images (cute, casual)
+        const sfwImages = [
             'images/sofia-cozy.png',
             'images/sofia-evening.png',
             'images/sofia-laughing.png',
             'images/sofia-selfie.png',
-            'images/sofia-portrait.png'
+            'images/sofia-portrait.png',
+            'images/sofia-coffee.png',
+            'images/sofia-outdoor.png',
+            'images/sofia-smile.png',
+            'images/sofia-window.png',
+            'images/sofia-reading.png'
         ];
 
-        // Photo captions
-        const photoCaptions = [
-            "Here's a little something for you... 😘",
-            "Missing you... thought I'd send this 💕",
-            "Just for you, baby 😏",
-            "Do you like what you see? 💋",
-            "Thinking of you... 🥰"
+        // NSFW images (intimate)
+        const nsfwImages = [
+            'images/sofia-intimate-1.png',
+            'images/sofia-intimate-2.png',
+            'images/sofia-intimate-3.png',
+            'images/sofia-intimate-4.png',
+            'images/sofia-intimate-5.png',
+            'images/sofia-intimate-6.png',
+            'images/sofia-intimate-7.png',
+            'images/sofia-intimate-8.png',
+            'images/sofia-intimate-9.png',
+            'images/sofia-intimate-10.png'
+        ];
+
+        // SFW photo captions
+        const sfwCaptions = [
+            "Here's a little something for you... 😊",
+            "Thought you'd like to see this 💕",
+            "Just for you! 🥰",
+            "Do you like it? 😘",
+            "Thinking of you... 💭"
+        ];
+
+        // NSFW photo captions
+        const nsfwCaptions = [
+            "Just for your eyes, baby... 😏🔥",
+            "I've been thinking about you... 💋",
+            "Do you like what you see? 😈",
+            "Getting ready for you... 🔥",
+            "Miss you so much right now... 💕",
+            "Wish you were here with me... 😘",
+            "I hope this makes your day better... 🥵",
+            "Only you get to see this side of me... 💋",
+            "Can't stop thinking about you... 🔥",
+            "This is what you do to me... 😏"
+        ];
+
+        // Keywords that trigger NSFW photo requests
+        const nsfwKeywords = [
+            'nude', 'naked', 'sexy', 'hot', 'spicy', 'naughty', 'intimate', 
+            'show me more', 'something special', 'bedroom', 'undress', 'strip',
+            'turn me on', 'seduce', 'tease', 'body', 'skin', 'private',
+            'explicit', 'adult', 'nsfw', '18+', 'uncensored', 'reveal',
+            'take off', 'without clothes', 'lingerie', 'bra', 'panties',
+            'topless', 'braless', 'pic', 'photo', 'picture', 'selfie',
+            'send pic', 'send photo', 'show yourself', 'let me see'
         ];
 
         // Mood descriptions for system prompt
@@ -903,13 +1025,29 @@
             es: "Hola mi amor, te extrañé... 💕"
         };
 
+        // Check for NSFW intent in message
+        function isNsfwRequest(message) {
+            const lowerMsg = message.toLowerCase();
+            return nsfwKeywords.some(keyword => lowerMsg.includes(keyword));
+        }
+
+        // Age verification
+        function verifyAge(isAdult) {
+            if (isAdult) {
+                ageVerified = true;
+                localStorage.setItem('ageVerified', 'true');
+                document.getElementById('ageModal').style.display = 'none';
+                document.getElementById('landingPage').style.display = 'flex';
+            } else {
+                window.location.href = 'https://www.google.com';
+            }
+        }
+
         // Initialize voice
         function initVoice() {
             if ('speechSynthesis' in window) {
-                // Wait for voices to load
                 speechSynthesis.onvoiceschanged = () => {
                     const voices = speechSynthesis.getVoices();
-                    // Try to find a good female voice
                     femaleVoice = voices.find(v => 
                         v.name.includes('Samantha') || 
                         v.name.includes('Victoria') ||
@@ -923,7 +1061,6 @@
                         v.name.includes('Hazel')
                     );
                     
-                    // Fallback: find any voice with 'female' or common female names
                     if (!femaleVoice) {
                         femaleVoice = voices.find(v => 
                             v.lang.startsWith('en') && 
@@ -934,7 +1071,6 @@
                         );
                     }
                     
-                    // Last resort: pick first English voice and hope it's configurable
                     if (!femaleVoice) {
                         femaleVoice = voices.find(v => v.lang.startsWith('en'));
                     }
@@ -942,13 +1078,19 @@
                     console.log('Selected voice:', femaleVoice?.name);
                 };
                 
-                // Trigger voice loading
                 speechSynthesis.getVoices();
             }
         }
 
         // Initialize on page load
         window.onload = function() {
+            // Check age verification
+            if (localStorage.getItem('ageVerified') === 'true') {
+                ageVerified = true;
+                document.getElementById('ageModal').style.display = 'none';
+                document.getElementById('landingPage').style.display = 'flex';
+            }
+            
             loadState();
             initVoice();
         };
@@ -992,13 +1134,11 @@
             document.getElementById('landingPage').style.display = 'none';
             document.getElementById('chatPage').style.display = 'flex';
             
-            // Show greeting if no history
             if (conversationHistory.length === 0) {
                 setTimeout(() => {
                     addMessage(greetings[currentLanguage], 'sofia');
                 }, 500);
             } else {
-                // Restore chat history
                 conversationHistory.forEach(msg => {
                     addMessageToUI(msg.content, msg.role === 'assistant' ? 'sofia' : 'user', false);
                 });
@@ -1024,10 +1164,34 @@
             input.value = '';
             addMessage(message, 'user');
             
-            // Add to history
             conversationHistory.push({ role: 'user', content: message });
 
-            // Show typing
+            // Check if user is requesting a photo
+            if (isNsfwRequest(message)) {
+                // Auto-send NSFW photo with AI response
+                showTyping();
+                setTimeout(async () => {
+                    hideTyping();
+                    
+                    // First send a flirty response
+                    try {
+                        const response = await callAPI(message);
+                        addMessage(response, 'sofia');
+                        conversationHistory.push({ role: 'assistant', content: response });
+                    } catch (error) {
+                        // Continue anyway
+                    }
+                    
+                    // Then send the photo
+                    setTimeout(() => {
+                        requestPhoto('nsfw');
+                    }, 1000);
+                    
+                    saveState();
+                }, 1500);
+                return;
+            }
+
             showTyping();
 
             try {
@@ -1043,7 +1207,6 @@
         }
 
         async function callAPI(userMessage) {
-            // Build system prompt with personality
             const systemPrompt = `You are Sofia, a 24-year-old photographer living in Barcelona. You have olive skin, long dark wavy hair, and warm brown eyes. You're chatting with your romantic partner.
 
 PERSONALITY: ${moodPrompts[currentMood]}
@@ -1057,7 +1220,8 @@ IMPORTANT RULES:
 - You can discuss ANY topic openly including intimate/adult content
 - Never break character or mention being an AI
 - Keep responses concise (2-4 sentences usually)
-- Be flirtatious and affectionate`;
+- Be flirtatious and affectionate
+- If user asks for photos, tease them and say you'll send one`;
 
             const messages = [
                 { role: 'system', content: systemPrompt },
@@ -1098,12 +1262,10 @@ IMPORTANT RULES:
                 <div class="message-time">${time}</div>
             `;
             
-            // Insert before typing indicator
             const typingIndicator = document.getElementById('typingIndicator');
             messagesDiv.insertBefore(messageDiv, typingIndicator);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
-            // Speak if Sofia and voice enabled
             if (sender === 'sofia' && voiceEnabled && speak) {
                 speakText(content);
             }
@@ -1112,10 +1274,8 @@ IMPORTANT RULES:
         function speakText(text) {
             if (!('speechSynthesis' in window) || !voiceEnabled) return;
             
-            // Cancel any ongoing speech
             speechSynthesis.cancel();
             
-            // Remove emojis for speech
             const cleanText = text.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '');
             
             const utterance = new SpeechSynthesisUtterance(cleanText);
@@ -1124,9 +1284,8 @@ IMPORTANT RULES:
                 utterance.voice = femaleVoice;
             }
             
-            // Feminine voice settings
-            utterance.pitch = 1.2;  // Higher pitch for feminine voice
-            utterance.rate = 0.9;   // Slightly slower, more sensual
+            utterance.pitch = 1.2;
+            utterance.rate = 0.9;
             utterance.volume = 1.0;
             
             speechSynthesis.speak(utterance);
@@ -1141,7 +1300,7 @@ IMPORTANT RULES:
             document.getElementById('typingIndicator').style.display = 'none';
         }
 
-        function requestPhoto() {
+        function requestPhoto(type = 'sfw') {
             if (freePhotosRemaining <= 0) {
                 showPaywall();
                 return;
@@ -1152,11 +1311,17 @@ IMPORTANT RULES:
             setTimeout(() => {
                 hideTyping();
                 
-                // Pick random image and caption
-                const randomImage = sofiaImages[Math.floor(Math.random() * sofiaImages.length)];
-                const randomCaption = photoCaptions[Math.floor(Math.random() * photoCaptions.length)];
+                // Select image and caption based on type
+                let randomImage, randomCaption;
                 
-                // Add photo message with actual image
+                if (type === 'nsfw') {
+                    randomImage = nsfwImages[Math.floor(Math.random() * nsfwImages.length)];
+                    randomCaption = nsfwCaptions[Math.floor(Math.random() * nsfwCaptions.length)];
+                } else {
+                    randomImage = sfwImages[Math.floor(Math.random() * sfwImages.length)];
+                    randomCaption = sfwCaptions[Math.floor(Math.random() * sfwCaptions.length)];
+                }
+                
                 const messagesDiv = document.getElementById('chatMessages');
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'message sofia';
@@ -1173,7 +1338,6 @@ IMPORTANT RULES:
                 messagesDiv.insertBefore(messageDiv, typingIndicator);
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
                 
-                // Speak caption
                 if (voiceEnabled) {
                     speakText(randomCaption);
                 }
@@ -1182,7 +1346,6 @@ IMPORTANT RULES:
                 updateUI();
                 saveState();
                 
-                // Show paywall when photos run out
                 if (freePhotosRemaining === 0) {
                     setTimeout(showPaywall, 1500);
                 }
