@@ -832,7 +832,12 @@
         </div>
         
         <button class="start-btn" onclick="startChat()">Start Chatting 💬</button>
-        
+
+        <p style="margin-top:14px;font-size:0.9rem;color:var(--text-secondary)">
+            Save your chats &amp; photos —
+            <span onclick="openAuth()" style="cursor:pointer;text-decoration:underline;color:var(--accent-pink)">Sign in / Sign up</span>
+        </p>
+
         <div class="features">
             <div class="feature">💬 Unlimited Chat</div>
             <div class="feature">📸 Photo Sharing</div>
@@ -880,6 +885,11 @@
         <div class="settings-header">
             <h2>Settings</h2>
             <button class="close-settings" onclick="toggleSettings()">×</button>
+        </div>
+
+        <div class="setting-group">
+            <label>👤 Account</label>
+            <div id="accountInfo"></div>
         </div>
 
         <div class="setting-group">
@@ -936,6 +946,38 @@
 
     <div class="overlay" id="overlay" onclick="toggleSettings()"></div>
 
+    <!-- ========== AUTH MODAL (Supabase) ========== -->
+    <div class="paywall-modal" id="authModal">
+        <div class="paywall-content" style="max-width:380px">
+            <h2 id="authTitle">Welcome back 💕</h2>
+            <p id="authError" style="min-height:18px;color:var(--accent-pink);font-size:0.9rem;margin:6px 0"></p>
+            <input id="authEmail" type="email" placeholder="you@email.com" autocomplete="email"
+                   style="width:100%;padding:12px 14px;margin:6px 0;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:var(--bg-card);color:var(--text-primary);font-family:inherit">
+            <input id="authPassword" type="password" placeholder="••••••••" autocomplete="current-password"
+                   style="width:100%;padding:12px 14px;margin:6px 0;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:var(--bg-card);color:var(--text-primary);font-family:inherit">
+            <button class="subscribe-btn" id="authSubmit" onclick="submitAuth()">Log in</button>
+            <button class="maybe-later" onclick="closeAuth()">Cancel</button>
+            <p style="margin-top:10px;font-size:0.9rem;color:var(--text-secondary)">
+                <span id="authToggleText">New here?</span>
+                <span onclick="toggleAuthMode()" id="authToggleBtn"
+                      style="cursor:pointer;text-decoration:underline;color:var(--accent-pink)">Create account</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Supabase client — the PUBLISHABLE key is safe in the browser (RLS enforces access) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        window.AMORAI_CONFIG = {
+            SUPABASE_URL: 'https://yikwrpizngqqbfemxnzad.supabase.co',
+            SUPABASE_ANON_KEY: 'sb_publishable_1BR6iWL5nGXeQ3pvQJNTDA_Mc_zcNki'
+        };
+        window.sb = window.supabase.createClient(
+            window.AMORAI_CONFIG.SUPABASE_URL,
+            window.AMORAI_CONFIG.SUPABASE_ANON_KEY
+        );
+    </script>
+
     <script>
         // State
         let currentMood = 'flirty';
@@ -946,6 +988,7 @@
         let conversationHistory = [];
         let femaleVoice = null;
         let ageVerified = false;
+        let currentUser = null;   // Supabase auth user (null when signed out)
 
         // SFW images (cute, casual)
         const sfwImages = [
@@ -1093,6 +1136,7 @@
             
             loadState();
             initVoice();
+            initAuth();   // Supabase: restore session + hydrate from cloud
         };
 
         function loadState() {
@@ -1140,7 +1184,11 @@
                 }, 500);
             } else {
                 conversationHistory.forEach(msg => {
-                    addMessageToUI(msg.content, msg.role === 'assistant' ? 'sofia' : 'user', false);
+                    if (msg.image) {
+                        addPhotoToUI(msg.content, msg.image, false);
+                    } else {
+                        addMessageToUI(msg.content, msg.role === 'assistant' ? 'sofia' : 'user', false);
+                    }
                 });
             }
         }
@@ -1229,9 +1277,13 @@ IMPORTANT RULES:
                 { role: 'user', content: userMessage }
             ];
 
+            const token = await currentToken();
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;  // lets backend save to Supabase
+
             const response = await fetch('/api/chat', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify({ messages })
             });
 
@@ -1322,34 +1374,50 @@ IMPORTANT RULES:
                     randomCaption = sfwCaptions[Math.floor(Math.random() * sfwCaptions.length)];
                 }
                 
-                const messagesDiv = document.getElementById('chatMessages');
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message sofia';
-                
-                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                
-                messageDiv.innerHTML = `
-                    <div class="message-content">${randomCaption}</div>
-                    <img src="${randomImage}" alt="Sofia" class="message-image" onclick="openImage('${randomImage}')">
-                    <div class="message-time">${time}</div>
-                `;
-                
-                const typingIndicator = document.getElementById('typingIndicator');
-                messagesDiv.insertBefore(messageDiv, typingIndicator);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                
-                if (voiceEnabled) {
-                    speakText(randomCaption);
-                }
-                
+                addPhotoToUI(randomCaption, randomImage, true);
+
+                // Record the photo so it reappears on reload (local + cloud).
+                conversationHistory.push({ role: 'assistant', content: randomCaption, image: randomImage });
+                persistPhoto(randomCaption, randomImage, type);
+
                 freePhotosRemaining--;
                 updateUI();
                 saveState();
-                
+
                 if (freePhotosRemaining === 0) {
                     setTimeout(showPaywall, 1500);
                 }
             }, 1500);
+        }
+
+        // Renders a Sofia photo message (used by requestPhoto + history restore).
+        function addPhotoToUI(caption, image, speak) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message sofia';
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            messageDiv.innerHTML = `
+                <div class="message-content">${caption}</div>
+                <img src="${image}" alt="Sofia" class="message-image" onclick="openImage('${image}')">
+                <div class="message-time">${time}</div>
+            `;
+            const typingIndicator = document.getElementById('typingIndicator');
+            messagesDiv.insertBefore(messageDiv, typingIndicator);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            if (voiceEnabled && speak) speakText(caption);
+        }
+
+        // Save a shown photo to Supabase (chats row + photos gallery) when signed in.
+        async function persistPhoto(caption, image, type) {
+            if (!currentUser) return;
+            try {
+                await window.sb.from('chats').insert({
+                    user_id: currentUser.id, role: 'assistant', content: caption, image_url: image
+                });
+                await window.sb.from('photos').insert({
+                    user_id: currentUser.id, prompt: type, url: image, provider: 'curated'
+                });
+            } catch (e) { console.error('persistPhoto', e); }
         }
 
         function openImage(src) {
@@ -1369,17 +1437,20 @@ IMPORTANT RULES:
             currentMood = mood;
             updateUI();
             saveState();
+            saveProfile({ mood: currentMood });
         }
 
         function setLanguage(lang) {
             currentLanguage = lang;
             saveState();
+            saveProfile({ language: currentLanguage });
         }
 
         function toggleVoice() {
             voiceEnabled = !voiceEnabled;
             updateUI();
             saveState();
+            saveProfile({ voice_enabled: voiceEnabled });
         }
 
         function toggleMemory() {
@@ -1448,6 +1519,136 @@ IMPORTANT RULES:
             updateUI();
             saveState();
             closePaywall();
+        }
+
+        // ========== AUTH + SUPABASE PERSISTENCE ==========
+        let authMode = 'login';
+
+        function openAuth() { document.getElementById('authModal').style.display = 'flex'; }
+        function closeAuth() {
+            document.getElementById('authModal').style.display = 'none';
+            document.getElementById('authError').textContent = '';
+        }
+
+        function toggleAuthMode() {
+            authMode = authMode === 'login' ? 'signup' : 'login';
+            document.getElementById('authTitle').textContent     = authMode === 'login' ? 'Welcome back 💕' : 'Create your account 💕';
+            document.getElementById('authSubmit').textContent    = authMode === 'login' ? 'Log in' : 'Sign up';
+            document.getElementById('authToggleText').textContent = authMode === 'login' ? 'New here?' : 'Already have an account?';
+            document.getElementById('authToggleBtn').textContent  = authMode === 'login' ? 'Create account' : 'Log in';
+            document.getElementById('authError').textContent = '';
+        }
+
+        async function submitAuth() {
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value;
+            const errEl = document.getElementById('authError');
+            errEl.style.color = 'var(--accent-pink)';
+            errEl.textContent = '';
+            if (!email || !password) { errEl.textContent = 'Enter your email and password'; return; }
+
+            const res = authMode === 'signup'
+                ? await window.sb.auth.signUp({ email, password })
+                : await window.sb.auth.signInWithPassword({ email, password });
+
+            if (res.error) { errEl.textContent = res.error.message; return; }
+
+            // If email confirmation is ON, signUp returns no session yet.
+            if (authMode === 'signup' && !res.data.session) {
+                errEl.style.color = '#7CFC98';
+                errEl.textContent = 'Account created! Check your email to confirm, then log in.';
+                return;
+            }
+            closeAuth();
+            await onSignedIn();
+        }
+
+        async function onSignedIn() {
+            await hydrateFromCloud();
+            updateAuthUI();
+            // Drop the user straight into chat with their restored history.
+            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('chatPage').style.display = 'flex';
+            document.getElementById('chatMessages').innerHTML =
+                '<div class="typing-indicator" id="typingIndicator"><span></span><span></span><span></span></div>';
+            if (conversationHistory.length === 0) {
+                addMessage(greetings[currentLanguage], 'sofia');
+            } else {
+                conversationHistory.forEach(msg => {
+                    if (msg.image) addPhotoToUI(msg.content, msg.image, false);
+                    else addMessageToUI(msg.content, msg.role === 'assistant' ? 'sofia' : 'user', false);
+                });
+            }
+        }
+
+        async function doLogout() {
+            await window.sb.auth.signOut();
+            currentUser = null;
+            conversationHistory = [];
+            saveState();
+            updateAuthUI();
+            toggleSettings();
+            goBack();
+        }
+
+        async function currentToken() {
+            const { data } = await window.sb.auth.getSession();
+            return data.session ? data.session.access_token : null;
+        }
+
+        // Pull profile + chat history from Supabase into the app's state.
+        async function hydrateFromCloud() {
+            const { data: u } = await window.sb.auth.getUser();
+            currentUser = u ? u.user : null;
+            if (!currentUser) return;
+
+            const { data: profile } = await window.sb
+                .from('profiles').select('*').eq('id', currentUser.id).single();
+            if (profile) {
+                currentMood         = profile.mood || currentMood;
+                currentLanguage     = profile.language || currentLanguage;
+                voiceEnabled        = profile.voice_enabled !== false;
+                freePhotosRemaining = profile.free_images ?? freePhotosRemaining;
+            }
+
+            const { data: chats } = await window.sb
+                .from('chats').select('role,content,image_url,created_at')
+                .eq('user_id', currentUser.id).order('created_at', { ascending: true }).limit(500);
+            if (chats) {
+                conversationHistory = chats.map(c => ({
+                    role: c.role, content: c.content,
+                    ...(c.image_url ? { image: c.image_url } : {})
+                }));
+            }
+            saveState();
+            updateUI();
+        }
+
+        // Persist a settings patch to the user's profile row (RLS-protected).
+        async function saveProfile(patch) {
+            if (!currentUser) return;
+            try { await window.sb.from('profiles').update(patch).eq('id', currentUser.id); }
+            catch (e) { console.error('saveProfile', e); }
+        }
+
+        // Reflect signed-in/out state in the Settings → Account section.
+        function updateAuthUI() {
+            const el = document.getElementById('accountInfo');
+            if (!el) return;
+            if (currentUser) {
+                el.innerHTML =
+                    `<div style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:8px">${currentUser.email}</div>` +
+                    `<button class="clear-history-btn" onclick="doLogout()">Log out</button>`;
+            } else {
+                el.innerHTML =
+                    `<button class="subscribe-btn" style="margin:0" onclick="toggleSettings();openAuth()">Sign in / Sign up</button>`;
+            }
+        }
+
+        async function initAuth() {
+            const { data } = await window.sb.auth.getSession();
+            if (data.session) await hydrateFromCloud();
+            updateAuthUI();
         }
     </script>
 </body>
