@@ -1105,7 +1105,6 @@
         function verifyAge(isAdult) {
             if (isAdult) {
                 ageVerified = true;
-                localStorage.setItem('ageVerified', 'true');
                 document.getElementById('ageModal').style.display = 'none';
                 document.getElementById('landingPage').style.display = 'flex';
             } else {
@@ -1154,13 +1153,19 @@
 
         // Initialize on page load
         window.onload = function() {
-            // Check age verification
-            if (localStorage.getItem('ageVerified') === 'true') {
-                ageVerified = true;
-                document.getElementById('ageModal').style.display = 'none';
-                document.getElementById('landingPage').style.display = 'flex';
-            }
-            
+            // Fresh start: purge legacy/corrupted local state left behind by older
+            // builds (old message caches, stale snapshots, prior age flags). We KEEP
+            // Supabase's own session keys (sb-*) so signed-in users stay logged in and
+            // their real history is restored from the cloud by initAuth().
+            Object.keys(localStorage).forEach(k => {
+                if (!k.startsWith('sb-')) localStorage.removeItem(k);
+            });
+
+            // Age gate ALWAYS blocks until the user confirms 18+ this visit. #ageModal
+            // is shown by default (CSS) and only hidden once verifyAge(true) runs.
+            // No localStorage bypass — nothing can skip the gate.
+            ageVerified = false;
+
             loadState();
             initVoice();
             initAuth();   // Supabase: restore session + hydrate from cloud
@@ -1276,8 +1281,23 @@
                 conversationHistory.push({ role: 'assistant', content: response });
                 saveState();
             } catch (error) {
+                // Sofia's model is often briefly rate-limited upstream (429). Retry
+                // once, quietly, after the suggested wait before giving up.
+                const wait = error.retryAfter || (error.code === 429 ? 12 : 0);
+                if (wait) {
+                    addMessage("Mmm, give me just a second, baby… 💭", 'sofia');
+                    await new Promise(r => setTimeout(r, wait * 1000));
+                    try {
+                        const retry = await callAPI(message);
+                        hideTyping();
+                        addMessage(retry, 'sofia');
+                        conversationHistory.push({ role: 'assistant', content: retry });
+                        saveState();
+                        return;
+                    } catch (e2) { /* fall through to the soft error below */ }
+                }
                 hideTyping();
-                addMessage("Sorry baby, I lost connection for a moment. Try again? 💕", 'sofia');
+                addMessage("Mmm, I got distracted for a second 💕 Say that again for me?", 'sofia');
             }
         }
 
@@ -1315,14 +1335,23 @@ IMPORTANT RULES:
             });
 
             const data = await response.json();
-            
+
             if (data.choices && data.choices[0]) {
                 return data.choices[0].message.content;
-            } else if (data.error) {
-                throw new Error(data.error);
             }
-            
-            throw new Error('Invalid response');
+
+            // Upstream/model error. The free model is often rate-limited (code 429);
+            // surface a STRUCTURED error so sendMessage() can retry gracefully instead
+            // of showing a scary "lost connection". data.error may be a string or an
+            // object like { message, code, metadata: { retry_after_seconds } }.
+            const errObj = data.error || {};
+            const err = new Error(
+                typeof errObj === 'string' ? errObj : (errObj.message || 'Invalid response')
+            );
+            err.code = errObj.code;
+            err.retryAfter = (errObj.metadata && errObj.metadata.retry_after_seconds)
+                ? Math.ceil(errObj.metadata.retry_after_seconds) : null;
+            throw err;
         }
 
         function addMessage(content, sender) {
