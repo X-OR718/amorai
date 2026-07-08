@@ -816,8 +816,11 @@
         </div>
     </div>
 
-    <!-- Landing Page -->
-    <div class="landing-page" id="landingPage" style="display: none;">
+    <!-- Landing Page — rendered at load (behind the opaque #ageModal, z-index 3000)
+         so its fadeInUp entrance animations play and SETTLE before the age gate is
+         dismissed. Previously display:none deferred the animations until reveal,
+         leaving elements invisible and the Start button translated over the links. -->
+    <div class="landing-page" id="landingPage">
         <h1 class="logo">Amorai</h1>
         <p class="tagline">Your Perfect Companion</p>
         
@@ -833,7 +836,10 @@
         
         <button class="start-btn" onclick="startChat()">Start Chatting 💬</button>
 
-        <p style="margin-top:14px;font-size:0.9rem;color:var(--text-secondary)">
+        <!-- position:relative + z-index keeps this link above the .start-btn, whose
+             fadeInUp transform (translateY 30px) would otherwise drop over it and
+             swallow real mouse clicks during/after the entrance animation. -->
+        <p style="margin-top:14px;font-size:0.9rem;color:var(--text-secondary);position:relative;z-index:2">
             Save your chats &amp; photos —
             <span onclick="openAuth()" style="cursor:pointer;text-decoration:underline;color:var(--accent-pink)">Sign in / Sign up</span>
         </p>
