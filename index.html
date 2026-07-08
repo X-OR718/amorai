@@ -1484,7 +1484,12 @@ IMPORTANT RULES:
             const panel = document.getElementById('settingsPanel');
             const overlay = document.getElementById('overlay');
             const isOpen = panel.style.display === 'block';
-            
+
+            // Whenever the panel opens, re-render the Account section so it always
+            // reflects the live sign-in state (Log out when authenticated, else
+            // Sign in / Sign up) regardless of when auth last changed.
+            if (!isOpen) updateAuthUI();
+
             panel.style.display = isOpen ? 'none' : 'block';
             overlay.style.display = isOpen ? 'none' : 'block';
         }
@@ -1620,6 +1625,10 @@ IMPORTANT RULES:
         }
 
         async function onSignedIn() {
+            // Clean slate first: a fresh sign-in/sign-up must never inherit a prior
+            // guest session's messages. hydrateFromCloud() then loads THIS account's
+            // real history (empty for a brand-new email → fresh greeting below).
+            conversationHistory = [];
             await hydrateFromCloud();
             updateAuthUI();
             // Drop the user straight into chat with their restored history.
@@ -1638,10 +1647,22 @@ IMPORTANT RULES:
         }
 
         async function doLogout() {
-            await window.sb.auth.signOut();
+            await window.sb.auth.signOut();   // removes Supabase's own sb-* session keys
             currentUser = null;
             conversationHistory = [];
-            saveState();
+            freePhotosRemaining = 10;
+
+            // Wipe all local app state so the next (guest or new) session is clean —
+            // no repeated/stale messages. sb-* keys were already cleared by signOut().
+            Object.keys(localStorage).forEach(k => {
+                if (!k.startsWith('sb-')) localStorage.removeItem(k);
+            });
+
+            // Reset the chat surface too, so old messages don't linger in the DOM.
+            document.getElementById('chatMessages').innerHTML =
+                '<div class="typing-indicator" id="typingIndicator"><span></span><span></span><span></span></div>';
+
+            updateUI();
             updateAuthUI();
             toggleSettings();
             goBack();
@@ -1670,12 +1691,12 @@ IMPORTANT RULES:
             const { data: chats } = await window.sb
                 .from('chats').select('role,content,image_url,created_at')
                 .eq('user_id', currentUser.id).order('created_at', { ascending: true }).limit(500);
-            if (chats) {
-                conversationHistory = chats.map(c => ({
-                    role: c.role, content: c.content,
-                    ...(c.image_url ? { image: c.image_url } : {})
-                }));
-            }
+            // Always assign deterministically: an empty or failed query yields []
+            // (a fresh account), never leaves stale history in place.
+            conversationHistory = (chats || []).map(c => ({
+                role: c.role, content: c.content,
+                ...(c.image_url ? { image: c.image_url } : {})
+            }));
             saveState();
             updateUI();
         }
