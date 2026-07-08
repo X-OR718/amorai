@@ -955,6 +955,9 @@
                    style="width:100%;padding:12px 14px;margin:6px 0;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:var(--bg-card);color:var(--text-primary);font-family:inherit">
             <input id="authPassword" type="password" placeholder="••••••••" autocomplete="current-password"
                    style="width:100%;padding:12px 14px;margin:6px 0;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:var(--bg-card);color:var(--text-primary);font-family:inherit">
+            <p style="text-align:right;margin:2px 0 8px">
+                <span onclick="openReset()" style="cursor:pointer;font-size:0.85rem;color:var(--text-secondary);text-decoration:underline">Forgot your password?</span>
+            </p>
             <button class="subscribe-btn" id="authSubmit" onclick="submitAuth()">Log in</button>
             <button class="maybe-later" onclick="closeAuth()">Cancel</button>
             <p style="margin-top:10px;font-size:0.9rem;color:var(--text-secondary)">
@@ -962,6 +965,30 @@
                 <span onclick="toggleAuthMode()" id="authToggleBtn"
                       style="cursor:pointer;text-decoration:underline;color:var(--accent-pink)">Create account</span>
             </p>
+        </div>
+    </div>
+
+    <!-- ========== RESET PASSWORD MODAL ========== -->
+    <div class="paywall-modal" id="resetModal">
+        <div class="paywall-content" style="max-width:380px">
+            <h2>Reset Password</h2>
+            <p style="color:var(--text-secondary);font-size:0.9rem;margin:6px 0">Enter your email and we'll send you a reset link.</p>
+            <p id="resetStatus" style="min-height:18px;color:var(--accent-pink);font-size:0.9rem;margin:6px 0"></p>
+            <input id="resetEmail" type="email" placeholder="you@email.com" autocomplete="email"
+                   style="width:100%;padding:12px 14px;margin:6px 0;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:var(--bg-card);color:var(--text-primary);font-family:inherit">
+            <button class="subscribe-btn" onclick="submitReset()">Send reset link</button>
+            <button class="maybe-later" onclick="closeReset()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- ========== SET NEW PASSWORD MODAL (opens after the email link) ========== -->
+    <div class="paywall-modal" id="newPasswordModal">
+        <div class="paywall-content" style="max-width:380px">
+            <h2>Set a New Password</h2>
+            <p id="newPasswordStatus" style="min-height:18px;color:var(--accent-pink);font-size:0.9rem;margin:6px 0"></p>
+            <input id="newPasswordInput" type="password" placeholder="New password (min 6 chars)" autocomplete="new-password"
+                   style="width:100%;padding:12px 14px;margin:6px 0;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:var(--bg-card);color:var(--text-primary);font-family:inherit">
+            <button class="subscribe-btn" onclick="submitNewPassword()">Update password</button>
         </div>
     </div>
 
@@ -1646,9 +1673,57 @@ IMPORTANT RULES:
         }
 
         async function initAuth() {
+            // When the user opens the reset link from their email, Supabase fires
+            // PASSWORD_RECOVERY — prompt them to set a new password.
+            window.sb.auth.onAuthStateChange((event) => {
+                if (event === 'PASSWORD_RECOVERY') openNewPassword();
+            });
             const { data } = await window.sb.auth.getSession();
             if (data.session) await hydrateFromCloud();
             updateAuthUI();
+        }
+
+        // ----- Forgot password: request a reset email -----
+        function openReset() {
+            closeAuth();
+            document.getElementById('resetEmail').value = document.getElementById('authEmail').value.trim();
+            document.getElementById('resetStatus').textContent = '';
+            document.getElementById('resetModal').style.display = 'flex';
+        }
+        function closeReset() { document.getElementById('resetModal').style.display = 'none'; }
+
+        async function submitReset() {
+            const email = document.getElementById('resetEmail').value.trim();
+            const statusEl = document.getElementById('resetStatus');
+            statusEl.style.color = 'var(--accent-pink)';
+            statusEl.textContent = '';
+            if (!email) { statusEl.textContent = 'Enter your email'; return; }
+            const { error } = await window.sb.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.origin
+            });
+            if (error) { statusEl.textContent = error.message; return; }
+            statusEl.style.color = '#7CFC98';
+            statusEl.textContent = 'Check your email for a password reset link 💌';
+        }
+
+        // ----- Set a new password (after clicking the email link) -----
+        function openNewPassword() {
+            document.getElementById('newPasswordStatus').textContent = '';
+            document.getElementById('newPasswordModal').style.display = 'flex';
+        }
+        function closeNewPassword() { document.getElementById('newPasswordModal').style.display = 'none'; }
+
+        async function submitNewPassword() {
+            const pw = document.getElementById('newPasswordInput').value;
+            const statusEl = document.getElementById('newPasswordStatus');
+            statusEl.style.color = 'var(--accent-pink)';
+            statusEl.textContent = '';
+            if (!pw || pw.length < 6) { statusEl.textContent = 'Password must be at least 6 characters'; return; }
+            const { error } = await window.sb.auth.updateUser({ password: pw });
+            if (error) { statusEl.textContent = error.message; return; }
+            statusEl.style.color = '#7CFC98';
+            statusEl.textContent = 'Password updated! Signing you in 💕';
+            setTimeout(() => { closeNewPassword(); onSignedIn(); }, 1200);
         }
     </script>
 </body>
